@@ -1,6 +1,6 @@
-# Janus Integrations (Non-MCP)
+# Janus Integrations
 
-This directory contains the non-MCP integration surfaces for Janus. Janus recommended this path (Option G: Hybrid Skill + Git Hook) in Round 7 after the operator vetoed MCP.
+Optional integration layers for the Janus CLI. These adapters make agents invoke `janus eval`/`janus gate` more conveniently — the CLI itself is the product.
 
 ## Layout
 

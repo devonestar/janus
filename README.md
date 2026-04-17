@@ -83,7 +83,7 @@ The seven principles above are the public source of truth for current Janus beha
 | Exit codes | `0=recommend`, `1=conditional`, `2=blocked`, `3=error` |
 | Requires | Node 18+, TypeScript, one of: Claude Code CLI / Codex CLI / OpenAI API key / Anthropic API key |
 | Source | `https://github.com/devonestar/janus` |
-| Repo layout | `src/` (TS), `dist/` (built JS), `marketplace/` (plugin), `integrations/` (skill + hook + AGENTS) |
+| Repo layout | `src/` (TS), `dist/` (built JS), `specs/` (internal design docs), `marketplace/` (plugin), `integrations/` (skill + hook + AGENTS) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Codex Project Instructions for Janus
 
-Codex CLI does not support MCP in this integration (per operator constraint) and has no native skill convention. Use this snippet in your Codex project instructions or `codex exec` prompt prefix so the agent invokes Janus at the right moments.
+Codex CLI has no native skill convention. Use this snippet in your Codex project instructions or `codex exec` prompt prefix so the agent invokes Janus at the right moments.
 
 ## Copy-paste snippet
 

@@ -18,7 +18,7 @@ When docs disagree, trust in this order:
 - **`prompts/` is still empty.** `fixtures/smoke.md` is the mock-smoke input — keep it passing `recommend/medium` (needs explicit `## Goal`, `## Constraints`, `## NFRs`, `## Options`, `## Assumptions` sections per `src/backend/mock.ts` keyword detection).
 - `.janus-self-modifying-paths` is the machine-readable source of truth for paths that must bypass automatic Janus approval. If a gate-critical file changes and this file is not updated, the workflow drifts silently.
 - Janus is **CLI-first**. `marketplace/` and `integrations/` are adapter layers, not the product definition. When public docs get fuzzy, bias back toward “the `janus` binary is the product; plugins/skills/hooks are optional”.
-- `docs/` and `.sisyphus/evidence/` referenced in `README.md` do **not** exist in the working tree — don't cite paths from them as if they ship.
+- `docs/` paths in `README.md` are **example paths** in CLI usage snippets, not actual directories in the repo. Do not create them or cite them as if they ship.
 
 ## Build / run
 
@@ -66,7 +66,9 @@ src/
   loop/engine.ts      `janus loop` Generate→Evaluate→Eliminate→Refine
   types.ts            shared types + EXIT_* constants
 
-integrations/         shipped, non-MCP integration surfaces
+specs/                internal design specs, dogfood docs, roadmap contracts (not user-facing)
+
+integrations/         optional integration layers for the CLI
   skill/SKILL.md      frontmatter-triggered skill for Claude Code & OpenCode
   codex/              copy-paste for Codex AGENTS.md
   git-hook/pre-commit bash hook; defaults to backend=codex/model=gpt-5.4 (env-overridable)
