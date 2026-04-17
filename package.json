@@ -1,7 +1,7 @@
 {
-  "name": "janus",
+  "name": "janus-gate",
   "version": "0.2.1",
-  "description": "Janus — AI-native decision gate for PRD/spec markdown.",
+  "description": "Janus — AI-native decision gate for PRD/spec markdown. An evaluation harness for agent-generated plans.",
   "license": "MIT",
   "author": "devonestar",
   "repository": {
@@ -14,8 +14,16 @@
   },
   "type": "module",
   "bin": {
-    "janus": "./dist/index.js"
+    "janus": "./dist/index.js",
+    "janus-gate": "./dist/index.js"
   },
+  "files": [
+    "dist/",
+    "fixtures/",
+    "integrations/",
+    "marketplace/",
+    "install.sh"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
@@ -46,7 +54,10 @@
     "llm",
     "claude",
     "codex",
-    "developer-tools"
+    "developer-tools",
+    "harness",
+    "agent-harness",
+    "eval-harness"
   ],
   "devDependencies": {
     "@types/node": "^20.11.0",
