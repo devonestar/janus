@@ -28,6 +28,13 @@ export const OUTPUT_SCHEMA_DESCRIPTION = `{
           "trigger": "string — document element that drives this event (constraint ID, NFR, unknown ID, or principle)"
         }
       ],
+      "comparison_basis": {
+        "fragility": "lower | equal | higher — relative to best_path",
+        "unknowns": "fewer | equal | more — unresolved unknowns relative to best_path",
+        "nfr_coverage": "better | equal | worse — NFR satisfaction relative to best_path",
+        "reversibility": "more | equal | less — ability to change course relative to best_path",
+        "scope": "smaller | equal | larger — scope expansion relative to best_path"
+      },
       "could_recover": "boolean — whether this path could re-enter if conditions change",
       "recovery_condition": "string | null — what would need to change"
     }
@@ -65,6 +72,7 @@ RULES:
 - candidate_paths is optional and MUST contain at most 3 entries when present
 - Every rejected_paths entry MUST have a non-empty rejection_reason
 - failure_chain is optional on each rejected path; when present it MUST have 1-5 steps
+- comparison_basis is optional on each rejected path; when present all 5 axes must be filled relative to best_path
 - Each failure_chain step MUST reference a specific document element (constraint, NFR, unknown, or principle) in the trigger field — do NOT invent references
 - failure_chain steps MUST use conditional language ("could", "if", "may") per P1
 - critical_unknowns MUST include entries for any missing required input fields

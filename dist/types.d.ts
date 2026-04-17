@@ -71,6 +71,13 @@ export interface FailureChainStep {
     event: string;
     trigger: string;
 }
+export interface ComparisonBasis {
+    fragility: "lower" | "equal" | "higher";
+    unknowns: "fewer" | "equal" | "more";
+    nfr_coverage: "better" | "equal" | "worse";
+    reversibility: "more" | "equal" | "less";
+    scope: "smaller" | "equal" | "larger";
+}
 export interface RejectedPath {
     name: string;
     rejection_reason: string;
@@ -78,6 +85,7 @@ export interface RejectedPath {
     archetype_slug?: string | null;
     canonical_key?: string;
     failure_chain?: FailureChainStep[];
+    comparison_basis?: ComparisonBasis;
     could_recover: boolean;
     recovery_condition: string | null;
 }

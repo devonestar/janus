@@ -84,6 +84,24 @@ export function validateOutput(output) {
                 }
             }
         }
+        if (rp.comparison_basis) {
+            const cb = rp.comparison_basis;
+            const FRAGILITY = new Set(["lower", "equal", "higher"]);
+            const UNKNOWNS = new Set(["fewer", "equal", "more"]);
+            const NFR = new Set(["better", "equal", "worse"]);
+            const REVERSIBILITY = new Set(["more", "equal", "less"]);
+            const SCOPE = new Set(["smaller", "equal", "larger"]);
+            if (!FRAGILITY.has(cb.fragility))
+                errors.push(`Rejected path "${rp.name}" comparison_basis.fragility invalid`);
+            if (!UNKNOWNS.has(cb.unknowns))
+                errors.push(`Rejected path "${rp.name}" comparison_basis.unknowns invalid`);
+            if (!NFR.has(cb.nfr_coverage))
+                errors.push(`Rejected path "${rp.name}" comparison_basis.nfr_coverage invalid`);
+            if (!REVERSIBILITY.has(cb.reversibility))
+                errors.push(`Rejected path "${rp.name}" comparison_basis.reversibility invalid`);
+            if (!SCOPE.has(cb.scope))
+                errors.push(`Rejected path "${rp.name}" comparison_basis.scope invalid`);
+        }
     }
     return errors;
 }
@@ -160,6 +178,10 @@ function formatMarkdown(o) {
                 for (const step of rp.failure_chain) {
                     lines.push(`  ${step.step}. ${step.event} [${step.trigger}]`);
                 }
+            }
+            if (rp.comparison_basis) {
+                const cb = rp.comparison_basis;
+                lines.push(`- **vs Best Path**: fragility=${cb.fragility}, unknowns=${cb.unknowns}, nfr=${cb.nfr_coverage}, reversibility=${cb.reversibility}, scope=${cb.scope}`);
             }
             if (rp.could_recover && rp.recovery_condition) {
                 lines.push(`- **Could Recover If**: ${rp.recovery_condition}`);

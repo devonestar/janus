@@ -89,6 +89,7 @@ When the document names fewer than 3 options, or when the named options do not s
 ## Output Rules
 
 - Every rejected path MUST have an explicit rejection_reason and violated_principle
+- Every rejected path SHOULD include a comparison_basis showing how it compares to best_path on 5 axes: fragility, unknowns, nfr_coverage, reversibility, scope
 - best_path is null when decision_status is "blocked"
 - All assumptions must be explicit with origin (explicit/inferred) and validated status
 - next_actions are always present, even for "recommend" outputs
