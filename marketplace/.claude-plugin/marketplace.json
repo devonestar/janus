@@ -1,0 +1,15 @@
+{
+  "name": "janus-local",
+  "owner": {
+    "name": "devonestar",
+    "url": "https://github.com/devonestar"
+  },
+  "plugins": [
+    {
+      "name": "janus",
+      "description": "Janus — AI-native decision gate for PRD/spec markdown.",
+      "source": "./janus",
+      "category": "planning"
+    }
+  ]
+}

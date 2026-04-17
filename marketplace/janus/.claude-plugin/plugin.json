@@ -1,0 +1,17 @@
+{
+  "name": "janus",
+  "version": "0.2.1",
+  "description": "Janus — AI-native decision gate for PRD/spec markdown.",
+  "author": {
+    "name": "devonestar"
+  },
+  "keywords": [
+    "prd",
+    "spec",
+    "evaluation",
+    "decision-gate",
+    "planning",
+    "robustness"
+  ],
+  "license": "MIT"
+}

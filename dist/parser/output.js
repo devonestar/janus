@@ -66,6 +66,24 @@ export function validateOutput(output) {
         if (rp.canonical_key && rp.canonical_key !== expectedCanonicalKey) {
             errors.push(`Rejected path "${rp.name}" has mismatched canonical_key`);
         }
+        if (rp.failure_chain) {
+            if (!Array.isArray(rp.failure_chain)) {
+                errors.push(`Rejected path "${rp.name}" failure_chain must be an array`);
+            }
+            else {
+                if (rp.failure_chain.length > 5) {
+                    errors.push(`Rejected path "${rp.name}" failure_chain exceeds 5 steps`);
+                }
+                for (const step of rp.failure_chain) {
+                    if (!step.event || step.event.trim() === "") {
+                        errors.push(`Rejected path "${rp.name}" failure_chain step ${step.step} missing event`);
+                    }
+                    if (!step.trigger || step.trigger.trim() === "") {
+                        errors.push(`Rejected path "${rp.name}" failure_chain step ${step.step} missing trigger`);
+                    }
+                }
+            }
+        }
     }
     return errors;
 }
@@ -136,6 +154,12 @@ function formatMarkdown(o) {
             lines.push(`- **Reason**: ${rp.rejection_reason}`);
             if (rp.violated_principle) {
                 lines.push(`- **Violated Principle**: ${rp.violated_principle}`);
+            }
+            if (rp.failure_chain && rp.failure_chain.length > 0) {
+                lines.push(`- **Failure Chain**:`);
+                for (const step of rp.failure_chain) {
+                    lines.push(`  ${step.step}. ${step.event} [${step.trigger}]`);
+                }
             }
             if (rp.could_recover && rp.recovery_condition) {
                 lines.push(`- **Could Recover If**: ${rp.recovery_condition}`);

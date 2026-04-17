@@ -66,12 +66,18 @@ export interface BestPath {
     fragility_warnings: string[];
     robustness_score: RobustnessScore;
 }
+export interface FailureChainStep {
+    step: number;
+    event: string;
+    trigger: string;
+}
 export interface RejectedPath {
     name: string;
     rejection_reason: string;
     violated_principle: string | null;
     archetype_slug?: string | null;
     canonical_key?: string;
+    failure_chain?: FailureChainStep[];
     could_recover: boolean;
     recovery_condition: string | null;
 }

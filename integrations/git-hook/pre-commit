@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Janus pre-commit hook
+# Runs `janus gate` on changed spec/PRD markdown files and blocks the commit
+# if the gate returns a non-zero exit code.
+#
+# Install:
+#   cp integrations/git-hook/pre-commit .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+#
+# Or via Husky / lefthook, reference this file from your hook config.
+#
+# Config via env vars:
+#   JANUS_BIN         - path to janus binary (default: 'janus')
+#   JANUS_WATCH_PATHS - regex of paths to check (default: 'docs/(specs|prds)/.*\.md$')
+#   JANUS_BACKEND     - backend to use (default: 'codex')
+#   JANUS_MODEL       - model override (default: 'gpt-5.4')
+#   JANUS_ALLOW_SKIP  - if '1', allow 'skip-janus' token in commit message to bypass
+
+set -e
+
+JANUS_BIN="${JANUS_BIN:-janus}"
+JANUS_WATCH_PATHS="${JANUS_WATCH_PATHS:-docs/(specs|prds)/.*\.md$}"
+JANUS_BACKEND="${JANUS_BACKEND:-codex}"
+JANUS_MODEL="${JANUS_MODEL:-gpt-5.4}"
+
+if ! command -v "$JANUS_BIN" >/dev/null 2>&1; then
+  echo "janus: binary '$JANUS_BIN' not found in PATH; skipping gate check" >&2
+  echo "janus: install janus or set JANUS_BIN env var to run this hook" >&2
+  exit 0
+fi
+
+# Find staged markdown files matching the watch pattern
+CHANGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "$JANUS_WATCH_PATHS" || true)
+
+if [ -z "$CHANGED" ]; then
+  # No matching files changed; nothing to gate
+  exit 0
+fi
+
+echo "janus: running gate on changed spec/PRD files" >&2
+
+FAILED=0
+for FILE in $CHANGED; do
+  echo "janus: checking $FILE" >&2
+  if ! "$JANUS_BIN" gate "$FILE" --backend "$JANUS_BACKEND" --model "$JANUS_MODEL" 2>&1 | tee /tmp/janus-gate-output-"$$".txt; then
+    EXIT=$?
+    echo "" >&2
+    echo "janus: GATE FAILED for $FILE (exit=$EXIT)" >&2
+    echo "janus: see output above for rejected_paths and critical_unknowns" >&2
+    echo "janus: to bypass this gate, use: git commit --no-verify" >&2
+    FAILED=1
+  fi
+done
+
+rm -f /tmp/janus-gate-output-"$$".txt 2>/dev/null || true
+
+if [ "$FAILED" -ne 0 ]; then
+  echo "" >&2
+  echo "janus: blocking commit because gate failed on one or more spec files" >&2
+  echo "janus: resolve the reported issues, then re-commit" >&2
+  exit 1
+fi
+
+echo "janus: gate PASSED for all changed spec files" >&2
+exit 0
