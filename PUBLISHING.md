@@ -39,7 +39,7 @@ Run these before pushing to the public repository:
 
 6. **Public repo surface**
    - GitHub repo description matches the current product statement
-   - default branch strategy is known (`master` today unless changed intentionally)
+   - default branch strategy is known (`main` today unless changed intentionally)
 
 ## Public / private scope
 

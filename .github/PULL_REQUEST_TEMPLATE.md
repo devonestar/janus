@@ -25,6 +25,6 @@
 ## Janus gate (if spec/PRD changed)
 
 <!--
-If this PR touches docs/specs/ or large README changes, paste Janus output:
+If this PR touches specs/ or large README changes, paste Janus output:
   janus gate <file.md> --format markdown
 -->

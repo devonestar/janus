@@ -34,7 +34,7 @@ npm run self-dev -- <file.md> [backend]   # full self-dev pipeline
 
 ## When to run Janus on your own changes
 
-Spec-level changes (docs/specs/, large README edits) must be evaluated with `janus eval` or `janus loop` before committing. Code-only `src/` changes are not gated.
+Spec-level changes (`specs/`, large README edits) must be evaluated with `janus eval` or `janus loop` before committing. Code-only `src/` changes are not gated.
 
 ## CI
 

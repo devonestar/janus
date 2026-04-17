@@ -76,7 +76,7 @@ Janus rejections will cite one of these:
 - **P4 Conflict Is Rejection** — depending on mutually contradictory constraints
 - **P5 Scope Discipline** — stepping outside what the document actually says
 - **P6 Reversibility Preference** — committing irreversibly under uncertainty
-- **P7 Abstention Is Correct** — recommending when evidence is insufficient
+- **P7 Abstention Is Correct Behavior** — recommending when evidence is insufficient
 
 When surfacing Janus output, always name the principle alongside the rejection.
 
