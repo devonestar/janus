@@ -12,7 +12,7 @@ When docs disagree, trust in this order:
 
 ## Repo state gotchas
 
-- **Git is initialized** (local only; no remote yet, no branches, no CI workflows). `git log` / `git blame` work only after the first commit lands.
+- **Git is on `main` branch** with GitHub remote at `devonestar/janus`. CI runs on push/PR via `.github/workflows/ci.yml` (build + test + dist/ freshness check across Node 18/20/22). Dependabot is configured for npm + GitHub Actions weekly updates.
 - **No linter, no formatter.** Only mechanical gate beyond `tsc` is `npm test` → mock-backend smoke on `fixtures/smoke.md`. It validates output-schema stability, not logic in `parser/`, `sampling/`, or `loop/`.
 - **`dist/` is tracked** (intentionally — `bin` resolves to `./dist/index.js`). After editing `src/**`, run `npm run build` and commit the resulting `dist/` in the same change.
 - **`prompts/` is still empty.** `fixtures/smoke.md` is the mock-smoke input — keep it passing `recommend/medium` (needs explicit `## Goal`, `## Constraints`, `## NFRs`, `## Options`, `## Assumptions` sections per `src/backend/mock.ts` keyword detection).
