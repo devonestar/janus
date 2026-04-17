@@ -1,6 +1,8 @@
 # Janus
 
-**Stop shipping satisficing plans.** Janus reads your PRD, spec, or design doc and tells you which paths will break, which unknowns you're ignoring, and whether you should proceed.
+> Named after the Roman god of gates and beginnings, whose two faces look simultaneously at the past and the future.
+
+**Stop shipping fragile plans.** Janus reads your PRD, spec, or design doc and tells you which paths will break, which unknowns you're ignoring, and whether you should proceed.
 
 ```bash
 janus eval my-spec.md
