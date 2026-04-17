@@ -56,10 +56,19 @@ Flag when:
 - All assumptions appear positive but none are validated
 - No alternative options are presented
 
+## Candidate Path Generation
+
+When the document names fewer than 3 options, or when the named options do not span the plausible solution space, generate bounded alternative candidates:
+- At most 3 candidate_paths total (including document-sourced ones)
+- Each candidate must have origin ("document", "generated", or "decomposed"), a fit_summary (max 180 chars), and an archetype_slug
+- Generated candidates must be grounded in the document's constraints and goals — do not invent requirements
+- Do NOT include the best_path as a candidate (it is already the recommendation)
+- Suppress candidate_paths entirely when the document already names 3+ well-specified options
+
 ## Evaluation Pipeline
 
 1. Parse and normalize the document into structured fields
-2. Identify candidate paths/options
+2. Identify candidate paths/options; generate bounded alternatives if underspecified
 3. Build a constraint graph (goals, constraints, NFRs, assumptions, dependencies)
 4. Detect conflicts between requirements
 5. Score each path for fragility (unvalidated assumptions, conflicts, irreversibility, missing NFRs)
