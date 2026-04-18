@@ -1,7 +1,9 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { SYSTEM_PROMPT } from "./system.js";
 import { COMPACT_SYSTEM_PROMPT } from "./system-compact.js";
 import { OUTPUT_SCHEMA_DESCRIPTION } from "./output-schema.js";
+import { DOOM_SYSTEM_PROMPT, COMPACT_DOOM_PROMPT } from "./doom.js";
+import { DOOM_OUTPUT_SCHEMA } from "./doom-schema.js";
 import type { EvaluationRequest } from "../types.js";
 import { analyzeDocumentStructure } from "../document-structure.js";
 
@@ -44,5 +46,26 @@ export async function buildCompareRequest(
     document: combined,
     systemPrompt: SYSTEM_PROMPT,
     outputSchema: OUTPUT_SCHEMA_DESCRIPTION,
+  };
+}
+
+export async function buildDoomRequest(input: string, compact = false): Promise<EvaluationRequest> {
+  let document = input;
+
+  try {
+    await access(input);
+    document = await readFile(input, "utf-8");
+  } catch {
+    document = input;
+  }
+
+  if (document.trim().length === 0) {
+    throw new Error("Doom input is empty");
+  }
+
+  return {
+    document,
+    systemPrompt: compact ? COMPACT_DOOM_PROMPT : DOOM_SYSTEM_PROMPT,
+    outputSchema: DOOM_OUTPUT_SCHEMA,
   };
 }

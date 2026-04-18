@@ -13,6 +13,110 @@ export class MockBackend implements JanusBackend {
 
   async evaluate(request: EvaluationRequest): Promise<EvaluationResponse> {
     const doc = request.document;
+
+    if (/Doom Gate|adversarial pre-mortem/i.test(request.systemPrompt)) {
+      const mockDoomReport = {
+        doom_scenarios: [
+          {
+            id: "D-1",
+            title: "Migration scope could outrun the stated rollback surface",
+            severity: "fatal",
+            survivability: "conditional",
+            survival_condition: "A reversible cutover plan and dual-write window are explicitly defined before migration starts",
+            failure_chain: [
+              {
+                step: 1,
+                event: "The proposal could move state to a new store before rollback mechanics are proven",
+                trigger: "migration plan",
+              },
+              {
+                step: 2,
+                event: "Operational divergence could appear if read/write paths split under load",
+                trigger: "store transition",
+              },
+              {
+                step: 3,
+                event: "The team may discover too late that rollback no longer restores a consistent state",
+                trigger: "missing reversibility evidence",
+              },
+            ],
+          },
+          {
+            id: "D-2",
+            title: "Throughput assumptions could fail under production traffic shape",
+            severity: "severe",
+            survivability: "survivable",
+            survival_condition: null,
+            failure_chain: [
+              {
+                step: 1,
+                event: "The new design could inherit a traffic pattern the input does not quantify",
+                trigger: "inline proposal details",
+              },
+              {
+                step: 2,
+                event: "Capacity behavior may degrade around hot partitions or bursty access",
+                trigger: "missing workload envelope",
+              },
+              {
+                step: 3,
+                event: "Latency SLOs could erode and force emergency mitigation work",
+                trigger: "unstated performance constraints",
+              },
+            ],
+          },
+          {
+            id: "D-3",
+            title: "Dependency coupling could turn a simple migration into a multi-team coordination trap",
+            severity: "moderate",
+            survivability: "conditional",
+            survival_condition: "All dependent services and ownership boundaries are mapped before execution",
+            failure_chain: [
+              {
+                step: 1,
+                event: "The proposal could assume downstream consumers are aligned on schema and access changes",
+                trigger: "unstated dependencies",
+              },
+              {
+                step: 2,
+                event: "Hidden integrations may surface late and delay sequencing",
+                trigger: "external dependency unknowns",
+              },
+              {
+                step: 3,
+                event: "The migration window could expand beyond the original plan",
+                trigger: "cross-team coordination",
+              },
+            ],
+          },
+        ],
+        survival_rating: "fragile",
+        doom_count: 3,
+        critical_unknowns: [
+          {
+            id: "U-1",
+            description: "Rollback mechanics are not explicitly described",
+            impact: "Without rollback evidence, fatal migration scenarios remain live",
+            question_for_human: "What is the exact rollback path if the new store degrades after cutover?",
+            source: "missing_field",
+          },
+          {
+            id: "U-2",
+            description: "Traffic shape and peak workload assumptions are not stated",
+            impact: "Survivability may change if the target store sees bursty or skewed access",
+            question_for_human: "What read/write profile and peak access pattern must the target store survive?",
+            source: "information_asymmetry",
+          },
+        ],
+      };
+
+      return {
+        raw: JSON.stringify(mockDoomReport),
+        parsed: null,
+        error: null,
+      };
+    }
+
     const structure = analyzeDocumentStructure(doc);
 
     const hasGoals = /goal|objective|purpose|aim/i.test(doc);

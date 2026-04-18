@@ -145,6 +145,28 @@ export interface LoopOptions extends EvalOptions {
     maxIterations: number;
     auto: boolean;
 }
+export type DoomSeverity = "fatal" | "severe" | "moderate" | "low";
+export type DoomSurvivability = "unsurvivable" | "conditional" | "survivable";
+export type SurvivalRating = "fragile" | "resilient" | "antifragile";
+export interface DoomScenario {
+    id: string;
+    title: string;
+    severity: DoomSeverity;
+    survivability: DoomSurvivability;
+    survival_condition: string | null;
+    failure_chain: FailureChainStep[];
+}
+export interface DoomReport {
+    doom_scenarios: DoomScenario[];
+    survival_rating: SurvivalRating;
+    doom_count: number;
+    critical_unknowns: CriticalUnknown[];
+}
+export interface DoomResponse {
+    raw: string;
+    parsed: DoomReport | null;
+    error: string | null;
+}
 export declare const EXIT_RECOMMEND = 0;
 export declare const EXIT_CONDITIONAL = 1;
 export declare const EXIT_BLOCKED = 2;

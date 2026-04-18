@@ -175,6 +175,33 @@ export interface LoopOptions extends EvalOptions {
   auto: boolean;
 }
 
+// --- Doom Gate Output ---
+export type DoomSeverity = "fatal" | "severe" | "moderate" | "low";
+export type DoomSurvivability = "unsurvivable" | "conditional" | "survivable";
+export type SurvivalRating = "fragile" | "resilient" | "antifragile";
+
+export interface DoomScenario {
+  id: string;
+  title: string;
+  severity: DoomSeverity;
+  survivability: DoomSurvivability;
+  survival_condition: string | null;
+  failure_chain: FailureChainStep[];
+}
+
+export interface DoomReport {
+  doom_scenarios: DoomScenario[];
+  survival_rating: SurvivalRating;
+  doom_count: number;
+  critical_unknowns: CriticalUnknown[];
+}
+
+export interface DoomResponse {
+  raw: string;
+  parsed: DoomReport | null;
+  error: string | null;
+}
+
 // Exit codes
 export const EXIT_RECOMMEND = 0;
 export const EXIT_CONDITIONAL = 1;

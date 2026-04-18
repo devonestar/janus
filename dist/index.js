@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 delete process.env["CI"];
 import { Command } from "commander";
-import { buildEvalRequest, buildCompareRequest } from "./prompt/builder.js";
+import { buildEvalRequest, buildCompareRequest, buildDoomRequest } from "./prompt/builder.js";
 import { createBackend } from "./backend/interface.js";
-import { validateOutput, formatOutput } from "./parser/output.js";
+import { validateOutput, formatOutput, validateDoomOutput, formatDoomOutput } from "./parser/output.js";
 import { runLoop } from "./loop/engine.js";
 import { aggregateSamples } from "./sampling/aggregator.js";
 import { normalizeOutputRejectedPaths } from "./rejected-path/identity.js";
@@ -14,7 +14,7 @@ const program = new Command();
 program
     .name("janus")
     .description("The two-faced gate that sees present and future, letting only the most robust paths pass")
-    .version("0.2.2");
+    .version("0.3.0");
 function exitCodeFor(status) {
     switch (status) {
         case "recommend": return EXIT_RECOMMEND;
@@ -27,6 +27,37 @@ function resolveFormat(format) {
         return format;
     }
     return process.stdout.isTTY ? "markdown" : "json";
+}
+function parseDoomResponse(raw) {
+    try {
+        const envelope = JSON.parse(raw.trim());
+        if (typeof envelope === "object" && envelope !== null && "result" in envelope) {
+            const result = envelope.result;
+            const innerText = typeof result === "string" ? result : raw;
+            const jsonMatch = innerText.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                return null;
+            }
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (typeof parsed === "object" && parsed !== null && "doom_scenarios" in parsed) {
+                return parsed;
+            }
+            return null;
+        }
+    }
+    catch {
+        // fall through to direct JSON parse
+    }
+    try {
+        const parsed = JSON.parse(raw.trim());
+        if (typeof parsed === "object" && parsed !== null && "doom_scenarios" in parsed) {
+            return parsed;
+        }
+        return null;
+    }
+    catch {
+        return null;
+    }
 }
 async function runEval(file, backendType, format, model, samples = 1) {
     const backend = createBackend({ type: backendType, model });
@@ -80,6 +111,50 @@ async function runEval(file, backendType, format, model, samples = 1) {
     const aggregated = aggregateSamples(outputs, errors);
     return { output: aggregated, exitCode: exitCodeFor(aggregated.decision_status) };
 }
+program
+    .command("doom <input>")
+    .description("Run an adversarial pre-mortem on a document or inline proposal")
+    .option("-f, --format <format>", "Output format: json, markdown, yaml")
+    .option("-b, --backend <backend>", "AI backend: claude, codex, opencode, openai-api, anthropic-api, mock", "claude")
+    .option("-m, --model <model>", "Model override for the backend")
+    .action(async (input, opts) => {
+    try {
+        const format = resolveFormat(opts.format);
+        const backendType = opts.backend;
+        const backend = createBackend({ type: backendType, model: opts.model });
+        const available = await backend.isAvailable();
+        if (!available) {
+            process.stderr.write(`Backend "${opts.backend}" is not available.\n`);
+            process.exit(EXIT_ERROR);
+        }
+        const useCompact = ["codex", "claude", "opencode"].includes(backendType);
+        const request = await buildDoomRequest(input, useCompact);
+        const response = await backend.evaluate(request);
+        const doom = parseDoomResponse(response.raw);
+        if (response.error && doom === null) {
+            process.stderr.write(`Evaluation error: ${response.error}\n`);
+            if (response.raw)
+                process.stderr.write(`Raw response:\n${response.raw.slice(0, 500)}\n`);
+            process.exit(EXIT_ERROR);
+        }
+        if (!doom) {
+            process.stderr.write("Evaluation error: Could not parse DoomReport from backend response\n");
+            if (response.raw)
+                process.stderr.write(`Raw response:\n${response.raw.slice(0, 500)}\n`);
+            process.exit(EXIT_ERROR);
+        }
+        const validationErrors = validateDoomOutput(doom);
+        for (const err of validationErrors)
+            process.stderr.write(`  - ${err}\n`);
+        process.stdout.write(formatDoomOutput(doom, format) + "\n");
+        process.exit(EXIT_RECOMMEND);
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`Error: ${message}\n`);
+        process.exit(EXIT_ERROR);
+    }
+});
 program
     .command("eval <file>")
     .description("Evaluate a PRD/spec document")
