@@ -63,7 +63,11 @@ async function runEval(file, backendType, format, model, samples = 1) {
     const backend = createBackend({ type: backendType, model });
     const available = await backend.isAvailable();
     if (!available) {
+        const hints = BACKEND_INSTALL_HINTS[backendType];
         process.stderr.write(`Backend "${backendType}" is not available.\n`);
+        if (hints)
+            process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+        process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
         process.exit(EXIT_ERROR);
     }
     const useCompact = ["codex", "claude", "opencode"].includes(backendType);
@@ -124,7 +128,11 @@ program
         const backend = createBackend({ type: backendType, model: opts.model });
         const available = await backend.isAvailable();
         if (!available) {
+            const hints = BACKEND_INSTALL_HINTS[opts.backend];
             process.stderr.write(`Backend "${opts.backend}" is not available.\n`);
+            if (hints)
+                process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+            process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
             process.exit(EXIT_ERROR);
         }
         const useCompact = ["codex", "claude", "opencode"].includes(backendType);
@@ -202,7 +210,11 @@ program
         const backend = createBackend({ type: opts.backend, model: opts.model });
         const available = await backend.isAvailable();
         if (!available) {
+            const hints = BACKEND_INSTALL_HINTS[opts.backend];
             process.stderr.write(`Backend "${opts.backend}" is not available.\n`);
+            if (hints)
+                process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+            process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
             process.exit(EXIT_ERROR);
         }
         const request = await buildCompareRequest(fileA, fileB);
@@ -263,7 +275,11 @@ program
         const backend = createBackend({ type: opts.backend, model: opts.model });
         const available = await backend.isAvailable();
         if (!available) {
+            const hints = BACKEND_INSTALL_HINTS[opts.backend];
             process.stderr.write(`Backend "${opts.backend}" is not available.\n`);
+            if (hints)
+                process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+            process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
             process.exit(EXIT_ERROR);
         }
         const useCompact = ["codex", "claude", "opencode"].includes(opts.backend);
@@ -312,5 +328,59 @@ program
         process.stderr.write(`Error: ${message}\n`);
         process.exit(EXIT_ERROR);
     }
+});
+const BACKEND_INSTALL_HINTS = {
+    claude: ["Claude Code CLI not found.", "Install: https://claude.ai/code  (requires Claude subscription)"],
+    codex: ["Codex CLI not found.", "Install: npm install -g @openai/codex"],
+    opencode: ["OpenCode CLI not found.", "Install: https://opencode.ai"],
+    "openai-api": ["OPENAI_API_KEY is not set.", "Set: export OPENAI_API_KEY=sk-..."],
+    "anthropic-api": ["ANTHROPIC_API_KEY is not set.", "Set: export ANTHROPIC_API_KEY=sk-ant-..."],
+};
+async function runDoctor() {
+    const CHECK = "✓";
+    const FAIL = "✗";
+    const WARN = "~";
+    process.stdout.write("Janus environment check\n");
+    process.stdout.write("─".repeat(40) + "\n\n");
+    const [major] = process.versions.node.split(".").map(Number);
+    const nodeOk = (major ?? 0) >= 18;
+    process.stdout.write(`${nodeOk ? CHECK : FAIL}  Node.js ${process.versions.node}${nodeOk ? "" : "  (need >=18)"}\n`);
+    process.stdout.write("\n");
+    const backends = ["claude", "codex", "opencode", "openai-api", "anthropic-api"];
+    let availableCount = 0;
+    for (const type of backends) {
+        const backend = createBackend({ type });
+        const ok = await backend.isAvailable();
+        if (ok)
+            availableCount++;
+        const symbol = ok ? CHECK : WARN;
+        process.stdout.write(`${symbol}  --backend ${type}`);
+        if (!ok) {
+            const hints = BACKEND_INSTALL_HINTS[type];
+            if (hints)
+                process.stdout.write(`  — ${hints[0]}`);
+        }
+        process.stdout.write("\n");
+        if (!ok && BACKEND_INSTALL_HINTS[type]) {
+            process.stdout.write(`       ${BACKEND_INSTALL_HINTS[type][1]}\n`);
+        }
+    }
+    process.stdout.write(`\n${WARN}  --backend mock  — always available (no LLM, structural checks only)\n`);
+    process.stdout.write("\n");
+    process.stdout.write("─".repeat(40) + "\n");
+    if (availableCount === 0) {
+        process.stdout.write(`No LLM backend available. Install one above, or use --backend mock.\n`);
+        process.exit(1);
+    }
+    else {
+        process.stdout.write(`${availableCount}/${backends.length} LLM backend(s) available. Ready.\n`);
+        process.exit(0);
+    }
+}
+program
+    .command("doctor")
+    .description("Check that required backends and dependencies are available")
+    .action(async () => {
+    await runDoctor();
 });
 program.parse();
