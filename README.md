@@ -204,7 +204,7 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 
 | Field | Value |
 |-------|-------|
-| Current version | `0.3.2` |
+| Current version | `0.4.0` |
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
@@ -322,7 +322,9 @@ Janus has been self-evaluated fourteen times. Each round Janus evaluates one of 
 
 Current public surface:
 
-- `eval`, `compare`, `loop`, `gate`
+- `eval`, `compare`, `loop`, `gate`, `doom`
+- `harness` — 3-pass eval+targeted-doom+crosscheck pipeline
+- `loop --harness` — harness-aware refinement loop with LLM refiner
 - `--samples N` consensus sampling on `eval`
 - CLI-first integrations under `integrations/`
 - self-dev pipeline (`npm run self-dev`) for spec-driven feature development
@@ -331,14 +333,18 @@ Current public surface:
 Work in progress / not yet shipped:
 
 - persona-gated PR / merge workflow
-- rejected-path canonicalization under sampling (first increment shipped in `bd9c5b6`)
+- context enrichment (URL fetch + LLM researcher pass before harness)
 - failure future narratives (`failure_chain` field on rejected paths)
-- Doom Gate: adversarial pre-mortem command (`janus doom`) — shipped in v0.3.0
+
+**Known limitations (v0.4.0)**:
+- `janus loop --harness` refiner convergence on production specs is not yet empirically validated beyond internal dogfood
+- opencode subprocess stdout reliability when spawned from Node.js has shown intermittent truncation — harness results should be verified when `--backend opencode` is used in CI
 
 ---
 
 ## Changelog
 
+- **0.4.0** -- Feature: `janus harness` 3-pass structured evaluation (eval → targeted-doom → crosscheck). `janus loop --harness` harness-aware refinement loop with LLM patch-mode refiner and convergence tracking. Primary backend: `claude` headless. Known limitations: loop refiner convergence not yet validated on production specs; opencode subprocess stdout intermittently unreliable in CI.
 - **0.3.2** -- Fix: `janus --version` now reads version from `package.json` dynamically instead of a hardcoded string.
 - **0.3.1** -- Fix: `janus doctor` no longer exits non-zero when zero LLM backends are installed. The command is diagnostic/informational; only Node < 18 (non-probe) or a failed `--probe` now causes non-zero exit. Unblocks CI runners with no LLM CLIs installed.
 - **0.3.0** -- Feature: `janus doom` adversarial pre-mortem command. Accepts markdown files or inline text. Dedicated DoomReport schema with severity/survivability/survival_rating. Honest Futures Bar 6/6 achieved.
