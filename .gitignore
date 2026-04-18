@@ -51,3 +51,4 @@ coverage/
 .janus-variance/
 sns-keys*
 credentials.json
+scripts/sns/
