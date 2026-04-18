@@ -31,6 +31,9 @@ jobs:
       - name: Type check & build
         run: npm run build
 
+      - name: Link janus binary
+        run: npm link
+
       - name: Smoke test (mock backend)
         run: npm test
 
