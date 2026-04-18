@@ -19,3 +19,4 @@ These documents record design decisions, experiments, and self-evaluation result
 | `janus-honest-futures.md` | Internal bar for honest futures-facing language |
 | `janus-persona-pr-merge-gate.md` | Persona-gated PR/merge workflow proposal |
 | `janus-doom-gate.md` | Doom Gate: adversarial pre-mortem command proposal |
+| `janus-doctor-probe.md` | Doctor --probe + exit codes + JSON output (Round 14 dogfood) |

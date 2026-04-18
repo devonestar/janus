@@ -292,7 +292,7 @@ Validators are registered in `scripts/self-dev.mjs`. To add a new one, add an en
 
 ## Dogfood Ledger
 
-Janus has been self-evaluated thirteen times. Each round Janus evaluates one of its own design documents, applies its own principles, and the result drives the next change.
+Janus has been self-evaluated fourteen times. Each round Janus evaluates one of its own design documents, applies its own principles, and the result drives the next change.
 
 | Round | Focus | Outcome |
 |-------|-------|---------|
@@ -309,6 +309,7 @@ Janus has been self-evaluated thirteen times. Each round Janus evaluates one of 
 | 11 | README storytelling | Janus picked Option E (Concrete-Evidence-First); rejected 3 alternatives including metaphor-first |
 | 12 | Doom Gate spec | Janus picked Option A (dedicated `doom` command + schema); rejected 3 alternatives (B=P4, C=P3, D=P4); conditional on grounding validation |
 | 13 | Doom Gate ship | U-1 grounding experiment passed (5/5); `janus doom` implemented and verified on mock + claude backends |
+| 14 | Doctor --probe spec | Janus picked Option A (--probe + exit codes + JSON in one cycle); loop terminated acceptable at iteration 3 (stagnant on U-1/U-2) |
 
 ---
 
