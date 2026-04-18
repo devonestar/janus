@@ -1,6 +1,6 @@
 {
   "name": "janus-gate",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Janus — AI-native decision gate for PRD/spec markdown.",
   "license": "MIT",
   "author": "devonestar",
