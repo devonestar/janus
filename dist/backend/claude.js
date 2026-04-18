@@ -48,9 +48,11 @@ export class ClaudeBackend {
     }
     spawnWithStdin(cmd, args, input) {
         return new Promise((resolve, reject) => {
+            const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith("CLAUDE_")));
             const child = spawn(cmd, args, {
                 stdio: ["pipe", "pipe", "pipe"],
                 timeout: this.timeout,
+                env: cleanEnv,
             });
             let stdout = "";
             let stderr = "";
