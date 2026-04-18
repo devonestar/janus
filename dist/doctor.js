@@ -85,7 +85,7 @@ export async function collectDoctorReport(options) {
         available_count: availableCount,
         attempted_probe_count: attemptedProbeCount,
         probe_pass_count: probePassCount,
-        ready: options.probe ? probePassCount > 0 : availableCount > 0,
+        ready: nodeOk && (options.probe ? attemptedProbeCount === 0 || probePassCount > 0 : true),
     };
 }
 export function renderDoctorHuman(report) {

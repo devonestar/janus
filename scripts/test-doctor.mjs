@@ -62,6 +62,16 @@ assert.match(humanProbe, /1\/2 attempted probe\(s\) passed\. Ready\.$/m);
 const failedProbe = { ...syntheticProbe, probe_pass_count: 0, ready: false };
 assert.equal(doctorModule.doctorExitCode(failedProbe), 1);
 
+// Regression guard (v0.3.1): zero LLM backends available is NOT a failure for non-probe doctor.
+// doctor is diagnostic/informational; only a broken env (Node < 18) or a failed --probe should exit non-zero.
+const zeroBackendReport = await doctorModule.collectDoctorReport({ probe: false });
+// On CI runners with no CLIs installed and no API keys, available_count is 0.
+// The tool MUST still exit 0 because mock is always available and Node is OK.
+if (zeroBackendReport.node_ok) {
+  assert.equal(doctorModule.doctorExitCode(zeroBackendReport), 0,
+    `non-probe doctor must exit 0 when Node is OK regardless of LLM availability (available_count=${zeroBackendReport.available_count})`);
+}
+
 const raw = execFileSync("./dist/index.js", ["doctor", "--format", "json"], {
   cwd: repoRoot,
   encoding: "utf8",

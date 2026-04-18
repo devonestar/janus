@@ -204,7 +204,7 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 
 | Field | Value |
 |-------|-------|
-| Current version | `0.3.0` |
+| Current version | `0.3.1` |
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
@@ -339,6 +339,7 @@ Work in progress / not yet shipped:
 
 ## Changelog
 
+- **0.3.1** -- Fix: `janus doctor` no longer exits non-zero when zero LLM backends are installed. The command is diagnostic/informational; only Node < 18 (non-probe) or a failed `--probe` now causes non-zero exit. Unblocks CI runners with no LLM CLIs installed.
 - **0.3.0** -- Feature: `janus doom` adversarial pre-mortem command. Accepts markdown files or inline text. Dedicated DoomReport schema with severity/survivability/survival_rating. Honest Futures Bar 6/6 achieved.
 - **0.2.2** -- Fix: Claude backend `--tools ""` flag prevents recursive tool invocation. New structural test guard. Doom Gate spec added (Round 12 dogfood).
 - **0.2.1** -- Fix: default `claude` backend timeout 120 s -> 240 s. Previously long docs (> 10 KB) could SIGTERM under samples.
