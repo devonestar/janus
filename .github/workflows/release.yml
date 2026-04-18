@@ -8,8 +8,8 @@ on:
 
 permissions:
   contents: read
-  # id-token: write is required for npm Trusted Publisher (OIDC) and --provenance.
-  # Do not remove: auth is OIDC, not NPM_TOKEN. Removing breaks publishing.
+  # id-token: write lets npm sign provenance via sigstore OIDC.
+  # Registry auth uses NPM_TOKEN; provenance signing is a separate OIDC flow.
   id-token: write
 
 jobs:
@@ -53,19 +53,7 @@ jobs:
             exit 1
           fi
 
-      - name: Diagnose OIDC claims (temporary)
-        run: |
-          TOKEN=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" \
-            | jq -r .value)
-          echo "::add-mask::$TOKEN"
-          PAYLOAD=$(echo "$TOKEN" | cut -d. -f2)
-          MOD=$((${#PAYLOAD} % 4))
-          if [ $MOD -ne 0 ]; then
-            PAYLOAD="${PAYLOAD}$(printf '=%.0s' $(seq 1 $((4 - MOD))))"
-          fi
-          echo "--- OIDC claims (what GitHub sends to npm) ---"
-          echo "$PAYLOAD" | base64 -d | jq '{iss, sub, aud, repository, repository_owner, repository_id, workflow, workflow_ref, job_workflow_ref, ref, ref_type, event_name, environment}'
-
       - name: Publish with provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --access public
