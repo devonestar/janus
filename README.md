@@ -204,7 +204,7 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 
 | Field | Value |
 |-------|-------|
-| Current version | `0.4.0` |
+| Current version | `0.4.1` |
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
@@ -344,6 +344,7 @@ Work in progress / not yet shipped:
 
 ## Changelog
 
+- **0.4.1** -- Fix: strip `CLAUDE_*` env vars (notably `CLAUDE_AGENT_SDK_VERSION`) before spawning the `claude` subprocess. When Janus is invoked from within Claude Code (agent sandbox), inherited SDK env vars put `claude -p` into protocol mode and hang the subprocess indefinitely instead of processing stdin. Affected: `janus eval/doom/harness/loop` via `--backend claude` when invoked under Claude Code or any other Claude SDK host.
 - **0.4.0** -- Feature: `janus harness` 3-pass structured evaluation (eval → targeted-doom → crosscheck). `janus loop --harness` harness-aware refinement loop with LLM patch-mode refiner and convergence tracking. Primary backend: `claude` headless. Known limitations: loop refiner convergence not yet validated on production specs; opencode subprocess stdout intermittently unreliable in CI.
 - **0.3.2** -- Fix: `janus --version` now reads version from `package.json` dynamically instead of a hardcoded string.
 - **0.3.1** -- Fix: `janus doctor` no longer exits non-zero when zero LLM backends are installed. The command is diagnostic/informational; only Node < 18 (non-probe) or a failed `--probe` now causes non-zero exit. Unblocks CI runners with no LLM CLIs installed.
