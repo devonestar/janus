@@ -145,6 +145,30 @@ export interface LoopOptions extends EvalOptions {
     maxIterations: number;
     auto: boolean;
 }
+export type DoctorFormat = "human" | "json";
+export type DoctorProbeStatus = "passed" | "failed" | "skipped";
+export interface DoctorBackendReport {
+    name: BackendType;
+    available: boolean;
+    hint?: string;
+    detail?: string;
+    probe_supported: boolean;
+    probe_attempted: boolean;
+    probe_status: DoctorProbeStatus;
+    probe_ok: boolean | null;
+    probe_error?: string;
+    probe_skip_reason?: string;
+}
+export interface DoctorReport {
+    node_version: string;
+    node_ok: boolean;
+    probe_enabled: boolean;
+    backends: DoctorBackendReport[];
+    available_count: number;
+    attempted_probe_count: number;
+    probe_pass_count: number;
+    ready: boolean;
+}
 export type DoomSeverity = "fatal" | "severe" | "moderate" | "low";
 export type DoomSurvivability = "unsurvivable" | "conditional" | "survivable";
 export type SurvivalRating = "fragile" | "resilient" | "antifragile";

@@ -137,13 +137,18 @@ janus loop draft.md --max-iterations 3
 
 # CI/CD binary gate (exit 0 = pass, non-zero = fail)
 janus gate pr-spec.md
+
+# Environment and backend health
+janus doctor
+janus doctor --probe
+janus doctor --format json
 ```
 
 ### Flags
 
 - `--backend <name>` -- `claude` (default), `codex`, `opencode`, `openai-api`, `anthropic-api`, `mock`
 - `--model <id>` -- override backend model. Omit to honor the backend's own config
-- `--format <fmt>` -- `json`, `markdown`, `yaml`
+- `--format <fmt>` -- `json`, `markdown`, `yaml` (`doctor`: `json` or default human text)
 - `--samples <N>` (eval only, v0.2.0+) -- run N times, return consensus. N in [1, 5]. Linear runtime cost.
 - `--max-iterations <N>` (loop only)
 
@@ -203,7 +208,7 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
-| Commands | `eval`, `compare`, `gate`, `loop`, `doom` |
+| Commands | `eval`, `compare`, `gate`, `loop`, `doom`, `doctor` |
 | Output formats | `json` (default off-TTY), `markdown` (default on TTY), `yaml` |
 | Exit codes | `0=recommend`, `1=conditional`, `2=blocked`, `3=error` |
 | Requires | Node 18+, TypeScript, one of: Claude Code CLI / Codex CLI / OpenAI API key / Anthropic API key |
