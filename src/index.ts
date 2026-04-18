@@ -8,6 +8,7 @@ import { createBackend } from "./backend/interface.js";
 import { validateOutput, formatOutput, validateDoomOutput, formatDoomOutput } from "./parser/output.js";
 import { runLoop } from "./loop/engine.js";
 import { runHarness, formatHarnessOutput } from "./harness/engine.js";
+import { runHarnessLoop } from "./loop/harness-loop.js";
 import { aggregateSamples } from "./sampling/aggregator.js";
 import { normalizeOutputRejectedPaths } from "./rejected-path/identity.js";
 import { normalizeCandidatePaths, suppressCandidatePaths } from "./candidate-path/identity.js";
@@ -317,7 +318,64 @@ program
   .option("-b, --backend <backend>", "AI backend", "claude")
   .option("-m, --model <model>", "Model override")
   .option("--max-iterations <n>", "Max loop iterations (1-5)", "5")
-  .action(async (file: string, opts: { format?: string; backend: string; model?: string; maxIterations: string }) => {
+  .option("--harness", "Use 3-pass harness (eval+doom+crosscheck) with LLM refinement between iterations")
+  .option("--output <file>", "Write best refined document to file (harness mode only)")
+  .action(async (file: string, opts: { format?: string; backend: string; model?: string; maxIterations: string; harness?: boolean; output?: string }) => {
+    if (opts.harness) {
+      try {
+        const backendType = opts.backend as BackendType;
+        const backend = createBackend({ type: backendType, model: opts.model });
+
+        const available = await backend.isAvailable();
+        if (!available) {
+          const hints = BACKEND_INSTALL_HINTS[backendType];
+          process.stderr.write(`Backend "${backendType}" is not available.\n`);
+          if (hints) process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+          process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
+          process.exit(EXIT_ERROR);
+        }
+
+        const useCompact = ["codex", "claude", "opencode"].includes(backendType);
+        const maxIter = Math.min(Math.max(parseInt(opts.maxIterations ?? "5", 10), 1), 5);
+        const result = await runHarnessLoop(file, {
+          backend,
+          compact: useCompact,
+          maxIterations: maxIter,
+          outputPath: opts.output,
+        });
+
+        const format = resolveFormat(opts.format);
+        if (format === "json") {
+          process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+        } else {
+          process.stdout.write(`# Janus Harness Loop Result\n\n`);
+          process.stdout.write(`**Termination**: ${result.termination_reason}\n`);
+          process.stdout.write(`**Final iteration**: ${result.final_iteration} | **Best iteration**: ${result.best_iteration}\n\n`);
+          process.stdout.write(`## Iteration History\n\n`);
+          for (const h of result.iterations) {
+            process.stdout.write(`- iter=${h.iteration} fatal=${h.score === Infinity ? "?" : h.fatal} uncovered=${h.score === Infinity ? "?" : h.uncovered} verdict=${h.verdict} score=${h.score === Infinity ? "∞" : h.score}\n`);
+          }
+          if (result.best_report) {
+            process.stdout.write(`\n## Best Harness Verdict\n\n`);
+            process.stdout.write(formatHarnessOutput(result.best_report, "markdown") + "\n");
+          }
+          if (result.error) {
+            process.stdout.write(`\n## Error\n\n${result.error}\n`);
+          }
+        }
+
+        if (result.termination_reason === "success") process.exit(EXIT_RECOMMEND);
+        if (result.termination_reason === "acceptable") process.exit(EXIT_CONDITIONAL);
+        if (result.termination_reason === "blocked") process.exit(EXIT_BLOCKED);
+        if (result.termination_reason === "error") process.exit(EXIT_ERROR);
+        process.exit(EXIT_CONDITIONAL);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`Error: ${message}\n`);
+        process.exit(EXIT_ERROR);
+      }
+      return;
+    }
     try {
       const format = resolveFormat(opts.format);
       const backend = createBackend({ type: opts.backend as BackendType, model: opts.model });

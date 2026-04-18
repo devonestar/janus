@@ -144,6 +144,7 @@ function computeHarnessVerdict(
 export interface HarnessOptions {
   backend: JanusBackend;
   compact?: boolean;
+  documentOverride?: string;
 }
 
 export async function runHarness(
@@ -157,6 +158,9 @@ export async function runHarness(
   // ------------------------------------------------------------------
   process.stderr.write("[harness] Pass 1/3 — eval...\n");
   const evalRequest = await buildEvalRequest(file, compact, true);
+  if (opts.documentOverride) {
+    evalRequest.document = opts.documentOverride;
+  }
   const structure = analyzeDocumentStructure(evalRequest.document);
   const evalResponse = await backend.evaluate(evalRequest);
 
@@ -205,7 +209,7 @@ export async function runHarness(
     `[harness] Pass 2/3 — targeted doom (${conditions.length} conditions)...\n`,
   );
 
-  const document = await readFile(file, "utf-8");
+  const document = opts.documentOverride ?? await readFile(file, "utf-8");
   const doomRequest: EvaluationRequest = {
     document,
     systemPrompt: buildTargetedDoomPrompt(conditions),

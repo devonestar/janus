@@ -115,6 +115,9 @@ export async function runHarness(file, opts) {
     // ------------------------------------------------------------------
     process.stderr.write("[harness] Pass 1/3 — eval...\n");
     const evalRequest = await buildEvalRequest(file, compact, true);
+    if (opts.documentOverride) {
+        evalRequest.document = opts.documentOverride;
+    }
     const structure = analyzeDocumentStructure(evalRequest.document);
     const evalResponse = await backend.evaluate(evalRequest);
     if (evalResponse.error || !evalResponse.parsed) {
@@ -154,7 +157,7 @@ export async function runHarness(file, opts) {
     // Pass 2: targeted doom
     // ------------------------------------------------------------------
     process.stderr.write(`[harness] Pass 2/3 — targeted doom (${conditions.length} conditions)...\n`);
-    const document = await readFile(file, "utf-8");
+    const document = opts.documentOverride ?? await readFile(file, "utf-8");
     const doomRequest = {
         document,
         systemPrompt: buildTargetedDoomPrompt(conditions),
