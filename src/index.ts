@@ -26,13 +26,14 @@ import {
   EXIT_BLOCKED,
   EXIT_ERROR,
 } from "./types.js";
+import pkg from "../package.json" with { type: "json" };
 
 const program = new Command();
 
 program
   .name("janus")
   .description("The two-faced gate that sees present and future, letting only the most robust paths pass")
-  .version("0.3.0");
+  .version(pkg.version);
 
 function exitCodeFor(status: DecisionStatus): number {
   switch (status) {

@@ -11,11 +11,12 @@ import { normalizeCandidatePaths, suppressCandidatePaths } from "./candidate-pat
 import { analyzeDocumentStructure } from "./document-structure.js";
 import { BACKEND_INSTALL_HINTS, collectDoctorReport, doctorExitCode, renderDoctorHuman, resolveDoctorFormat } from "./doctor.js";
 import { EXIT_RECOMMEND, EXIT_CONDITIONAL, EXIT_BLOCKED, EXIT_ERROR, } from "./types.js";
+import pkg from "../package.json" with { type: "json" };
 const program = new Command();
 program
     .name("janus")
     .description("The two-faced gate that sees present and future, letting only the most robust paths pass")
-    .version("0.3.0");
+    .version(pkg.version);
 function exitCodeFor(status) {
     switch (status) {
         case "recommend": return EXIT_RECOMMEND;
