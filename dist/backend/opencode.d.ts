@@ -6,5 +6,7 @@ export declare class OpenCodeBackend implements JanusBackend {
     constructor(config: BackendConfig);
     isAvailable(): Promise<boolean>;
     evaluate(request: EvaluationRequest): Promise<EvaluationResponse>;
+    private spawnCollect;
+    private extractTextFromEvents;
     private parseResponse;
 }

@@ -7,6 +7,7 @@ import { buildEvalRequest, buildCompareRequest, buildDoomRequest } from "./promp
 import { createBackend } from "./backend/interface.js";
 import { validateOutput, formatOutput, validateDoomOutput, formatDoomOutput } from "./parser/output.js";
 import { runLoop } from "./loop/engine.js";
+import { runHarness, formatHarnessOutput } from "./harness/engine.js";
 import { aggregateSamples } from "./sampling/aggregator.js";
 import { normalizeOutputRejectedPaths } from "./rejected-path/identity.js";
 import { normalizeCandidatePaths, suppressCandidatePaths } from "./candidate-path/identity.js";
@@ -392,6 +393,42 @@ program
   .action(async (opts: { format?: string; probe?: boolean }) => {
     try {
       await runDoctor(resolveDoctorFormat(opts.format), opts.probe === true);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      process.stderr.write(`Error: ${message}\n`);
+      process.exit(EXIT_ERROR);
+    }
+  });
+
+program
+  .command("harness <file>")
+  .description("3-pass structured evaluation: eval → targeted doom → crosscheck matrix")
+  .option("-f, --format <format>", "Output format: json, markdown")
+  .option("-b, --backend <backend>", "AI backend: claude, codex, opencode, openai-api, anthropic-api, mock", "claude")
+  .option("-m, --model <model>", "Model override for the backend")
+  .action(async (file: string, opts: { format?: string; backend: string; model?: string }) => {
+    try {
+      const backendType = opts.backend as BackendType;
+      const backend = createBackend({ type: backendType, model: opts.model });
+
+      const available = await backend.isAvailable();
+      if (!available) {
+        const hints = BACKEND_INSTALL_HINTS[backendType];
+        process.stderr.write(`Backend "${backendType}" is not available.\n`);
+        if (hints) process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+        process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
+        process.exit(EXIT_ERROR);
+      }
+
+      const useCompact = ["codex", "claude", "opencode"].includes(backendType);
+      const report = await runHarness(file, { backend, compact: useCompact });
+
+      const fmt = (opts.format === "json" || opts.format === "markdown")
+        ? opts.format
+        : (process.stdout.isTTY ? "markdown" : "json");
+
+      process.stdout.write(formatHarnessOutput(report, fmt) + "\n");
+      process.exit(exitCodeFor(report.harness_verdict.final_recommendation));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       process.stderr.write(`Error: ${message}\n`);

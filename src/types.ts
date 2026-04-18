@@ -229,6 +229,41 @@ export interface DoomResponse {
   error: string | null;
 }
 
+// --- Harness ---
+export type HarnessRiskLevel = "fatal" | "severe" | "moderate" | "low" | "uncovered";
+
+export interface TargetedDoomScenario extends DoomScenario {
+  attacks_condition: string | null;
+}
+
+export interface TargetedDoomReport {
+  doom_scenarios: TargetedDoomScenario[];
+  survival_rating: SurvivalRating;
+  doom_count: number;
+}
+
+export interface CrosscheckEntry {
+  enabling_condition: string;
+  doom_covered: boolean;
+  covering_scenario: string | null;
+  risk_level: HarnessRiskLevel;
+}
+
+export interface HarnessVerdict {
+  condition_survival_rate: number;
+  unattacked_conditions: string[];
+  fatal_conditions: string[];
+  final_recommendation: DecisionStatus;
+  delta_from_eval: string | null;
+}
+
+export interface HarnessReport {
+  eval_verdict: JanusOutput;
+  doom_verdict: TargetedDoomReport;
+  crosscheck_matrix: CrosscheckEntry[];
+  harness_verdict: HarnessVerdict;
+}
+
 // Exit codes
 export const EXIT_RECOMMEND = 0;
 export const EXIT_CONDITIONAL = 1;
