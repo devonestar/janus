@@ -253,6 +253,7 @@ export interface HarnessVerdict {
   condition_survival_rate: number;
   unattacked_conditions: string[];
   fatal_conditions: string[];
+  verification_required: string[];
   final_recommendation: DecisionStatus;
   delta_from_eval: string | null;
 }

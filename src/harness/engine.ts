@@ -113,6 +113,10 @@ function computeHarnessVerdict(
     .filter(e => e.risk_level === "fatal")
     .map(e => e.enabling_condition);
 
+  const verification_required = crosscheck
+    .filter(e => e.doom_covered && e.risk_level !== "fatal")
+    .map(e => e.enabling_condition);
+
   let final_recommendation: DecisionStatus;
   if (fatal_conditions.length > 0) {
     final_recommendation = "blocked";
@@ -125,13 +129,14 @@ function computeHarnessVerdict(
   const evalStatus = evalOutput.decision_status;
   let delta_from_eval: string | null = null;
   if (final_recommendation !== evalStatus) {
-    delta_from_eval = `${evalStatus}→${final_recommendation} (fatal=${fatal_conditions.length}, uncovered=${unattacked_conditions.length})`;
+    delta_from_eval = `${evalStatus}→${final_recommendation} (fatal=${fatal_conditions.length}, uncovered=${unattacked_conditions.length}, verification=${verification_required.length})`;
   }
 
   return {
     condition_survival_rate,
     unattacked_conditions,
     fatal_conditions,
+    verification_required,
     final_recommendation,
     delta_from_eval,
   };
@@ -191,6 +196,7 @@ export async function runHarness(
       condition_survival_rate: 1,
       unattacked_conditions: [],
       fatal_conditions: [],
+      verification_required: [],
       final_recommendation: evalOutput.decision_status,
       delta_from_eval: null,
     };
@@ -321,6 +327,12 @@ export function formatHarnessOutput(report: HarnessReport, format: "json" | "mar
     lines.push(`- **Uncovered conditions**:`);
     for (const uc of harness_verdict.unattacked_conditions) {
       lines.push(`  - ${uc}`);
+    }
+  }
+  if (harness_verdict.verification_required.length > 0) {
+    lines.push(`- **Verification required** (survived doom, needs external validation):`);
+    for (const vr of harness_verdict.verification_required) {
+      lines.push(`  - ${vr}`);
     }
   }
 
