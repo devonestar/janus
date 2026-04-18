@@ -39,3 +39,7 @@ Spec-level changes (`specs/`, large README edits) must be evaluated with `janus 
 ## CI
 
 GitHub Actions runs on push/PR to main: build + test across Node 18/20/22 + dist/ freshness check.
+
+## Local context
+
+세션 시작 시 `.claude/local-context.md`를 읽어서 운영 컨텍스트(SNS 봇, 용어 사전 등)를 로드할 것. 이 파일은 git-ignored이며 민감 정보 경로를 포함한다.

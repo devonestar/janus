@@ -103,6 +103,10 @@ program
         }
         const { output, exitCode } = await runEval(file, opts.backend, format, opts.model, samples);
         process.stdout.write(formatOutput(output, format) + "\n");
+        if (process.stderr.isTTY && exitCode !== EXIT_ERROR) {
+            process.stderr.write("\n\x1b[33m★\x1b[0m If Janus helped, consider starring the repo!\n");
+            process.stderr.write("  \x1b[2mgh repo star devonestar/janus\x1b[0m\n");
+        }
         process.exit(exitCode);
     }
     catch (err) {

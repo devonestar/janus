@@ -137,6 +137,10 @@ program
         samples,
       );
       process.stdout.write(formatOutput(output, format) + "\n");
+      if (process.stderr.isTTY && exitCode !== EXIT_ERROR) {
+        process.stderr.write("\n\x1b[33m★\x1b[0m If Janus helped, consider starring the repo!\n");
+        process.stderr.write("  \x1b[2mgh repo star devonestar/janus\x1b[0m\n");
+      }
       process.exit(exitCode);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);

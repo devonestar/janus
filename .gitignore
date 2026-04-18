@@ -23,6 +23,9 @@ Desktop.ini
 .cursorignore
 .cursor/
 
+# Claude local context (not tracked)
+.claude/
+
 # Logs
 *.log
 npm-debug.log*
@@ -45,3 +48,5 @@ coverage/
 
 # Janus-specific
 .janus-variance/
+sns-keys*
+credentials.json

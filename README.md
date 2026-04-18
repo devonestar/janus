@@ -33,11 +33,17 @@ Use Janus **before committing to a plan** — not after.
 ## Quick Start
 
 ```bash
-git clone https://github.com/devonestar/janus.git
-cd janus
-npm install && npm run build
-npm link    # exposes `janus` globally
+# One-line install
+npm install -g janus-gate
 
+# Or run without installing
+npx janus-gate eval your-spec.md
+
+# Or install via shell script
+curl -fsSL https://raw.githubusercontent.com/devonestar/janus/main/install.sh | bash
+```
+
+```bash
 janus eval your-spec.md
 ```
 
@@ -194,7 +200,8 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 | Field | Value |
 |-------|-------|
 | Current version | `0.2.1` |
-| Binary | `janus` (on `$PATH` after `npm link`) |
+| npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
+| Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
 | Commands | `eval`, `compare`, `gate`, `loop` |
 | Output formats | `json` (default off-TTY), `markdown` (default on TTY), `yaml` |
