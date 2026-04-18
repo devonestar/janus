@@ -53,5 +53,19 @@ jobs:
             exit 1
           fi
 
+      - name: Diagnose OIDC claims (temporary)
+        run: |
+          TOKEN=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" \
+            | jq -r .value)
+          echo "::add-mask::$TOKEN"
+          PAYLOAD=$(echo "$TOKEN" | cut -d. -f2)
+          MOD=$((${#PAYLOAD} % 4))
+          if [ $MOD -ne 0 ]; then
+            PAYLOAD="${PAYLOAD}$(printf '=%.0s' $(seq 1 $((4 - MOD))))"
+          fi
+          echo "--- OIDC claims (what GitHub sends to npm) ---"
+          echo "$PAYLOAD" | base64 -d | jq '{iss, sub, aud, repository, repository_owner, repository_id, workflow, workflow_ref, job_workflow_ref, ref, ref_type, event_name, environment}'
+
       - name: Publish with provenance
         run: npm publish --provenance --access public
