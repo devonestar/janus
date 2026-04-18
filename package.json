@@ -29,7 +29,7 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "test": "janus eval fixtures/smoke.md --backend mock && janus doctor && node scripts/test-no-tools-flag.mjs",
+    "test": "./dist/index.js eval fixtures/smoke.md --backend mock && ./dist/index.js doctor && node scripts/test-no-tools-flag.mjs",
     "check:intake": "node scripts/check-intake.mjs",
     "self-dev": "node scripts/self-dev.mjs"
   },
