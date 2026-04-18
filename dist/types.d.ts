@@ -220,6 +220,34 @@ export interface HarnessReport {
     crosscheck_matrix: CrosscheckEntry[];
     harness_verdict: HarnessVerdict;
 }
+export type ClaimType = "url" | "npm" | "github" | "statistical";
+export type FetchStatus = "success" | "error" | "skipped";
+export type EvidenceConfidence = "high" | "medium" | "low";
+export interface Claim {
+    type: ClaimType;
+    raw: string;
+    normalized: string;
+}
+export interface FetchedEvidence {
+    claim: Claim;
+    status: FetchStatus;
+    data: Record<string, unknown> | null;
+    error?: string;
+}
+export interface EnrichmentFinding {
+    source: string;
+    finding: string;
+    supports_assumption: string | null;
+    contradicts_assumption: string | null;
+    confidence: EvidenceConfidence;
+}
+export interface EnrichmentReport {
+    file: string;
+    claims_found: Claim[];
+    evidence: FetchedEvidence[];
+    findings: EnrichmentFinding[];
+    summary: string;
+}
 export declare const EXIT_RECOMMEND = 0;
 export declare const EXIT_CONDITIONAL = 1;
 export declare const EXIT_BLOCKED = 2;

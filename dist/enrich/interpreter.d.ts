@@ -1,0 +1,3 @@
+import type { FetchedEvidence } from "../types.js";
+export declare const ENRICH_OUTPUT_SCHEMA = "{\n  \"findings\": [\n    {\n      \"source\": \"<URL or package name or stat>\",\n      \"finding\": \"<one sentence: what the external data shows>\",\n      \"supports_assumption\": \"<assumption id like A-1, or null>\",\n      \"contradicts_assumption\": \"<assumption id like A-1, or null>\",\n      \"confidence\": \"<high|medium|low>\"\n    }\n  ],\n  \"summary\": \"<2-3 sentences: overall picture \u2014 what external evidence confirms, challenges, or leaves open>\"\n}";
+export declare function buildInterpreterPrompt(document: string, evidence: FetchedEvidence[]): string;

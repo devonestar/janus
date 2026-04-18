@@ -6,6 +6,7 @@ import { createBackend } from "./backend/interface.js";
 import { validateOutput, formatOutput, validateDoomOutput, formatDoomOutput } from "./parser/output.js";
 import { runLoop } from "./loop/engine.js";
 import { runHarness, formatHarnessOutput } from "./harness/engine.js";
+import { runEnrich, formatEnrichOutput } from "./enrich/engine.js";
 import { runHarnessLoop } from "./loop/harness-loop.js";
 import { aggregateSamples } from "./sampling/aggregator.js";
 import { normalizeOutputRejectedPaths } from "./rejected-path/identity.js";
@@ -444,6 +445,38 @@ program
             : (process.stdout.isTTY ? "markdown" : "json");
         process.stdout.write(formatHarnessOutput(report, fmt) + "\n");
         process.exit(exitCodeFor(report.harness_verdict.final_recommendation));
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`Error: ${message}\n`);
+        process.exit(EXIT_ERROR);
+    }
+});
+program
+    .command("enrich <file>")
+    .description("Fetch external evidence (npm/GitHub/URLs) and interpret against document assumptions")
+    .option("-f, --format <format>", "Output format: json, markdown")
+    .option("-b, --backend <backend>", "AI backend: claude, codex, opencode, openai-api, anthropic-api, mock", "claude")
+    .option("-m, --model <model>", "Model override for the backend")
+    .action(async (file, opts) => {
+    try {
+        const backendType = opts.backend;
+        const backend = createBackend({ type: backendType, model: opts.model });
+        const available = await backend.isAvailable();
+        if (!available) {
+            const hints = BACKEND_INSTALL_HINTS[backendType];
+            process.stderr.write(`Backend "${backendType}" is not available.\n`);
+            if (hints)
+                process.stderr.write(`  ${hints[0]}\n  ${hints[1]}\n`);
+            process.stderr.write(`  Run \`janus doctor\` to check all backends.\n`);
+            process.exit(EXIT_ERROR);
+        }
+        const report = await runEnrich(file, { backend });
+        const fmt = (opts.format === "json" || opts.format === "markdown")
+            ? opts.format
+            : (process.stdout.isTTY ? "markdown" : "json");
+        process.stdout.write(formatEnrichOutput(report, fmt) + "\n");
+        process.exit(EXIT_RECOMMEND);
     }
     catch (err) {
         const message = err instanceof Error ? err.message : String(err);

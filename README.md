@@ -204,11 +204,11 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 
 | Field | Value |
 |-------|-------|
-| Current version | `0.4.2` |
+| Current version | `0.5.0` |
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
-| Commands | `eval`, `compare`, `gate`, `loop`, `doom`, `doctor` |
+| Commands | `eval`, `compare`, `gate`, `loop`, `doom`, `harness`, `enrich`, `doctor` |
 | Output formats | `json` (default off-TTY), `markdown` (default on TTY), `yaml` |
 | Exit codes | `0=recommend`, `1=conditional`, `2=blocked`, `3=error` |
 | Requires | Node 18+, TypeScript, one of: Claude Code CLI / Codex CLI / OpenAI API key / Anthropic API key |
@@ -344,6 +344,7 @@ Work in progress / not yet shipped:
 
 ## Changelog
 
+- **0.5.0** -- Feature: `janus enrich <file>` — fetches external evidence (GitHub API, npm registry, URLs) referenced in the document, then uses LLM to interpret findings against the document's assumptions. Surfaces what external data confirms, challenges, or leaves ungrounded. Addresses the document-bound evaluation gap for strategic/future-facing specs. New types: `Claim`, `FetchedEvidence`, `EnrichmentFinding`, `EnrichmentReport`. `GITHUB_TOKEN` env var supported for higher rate limits.
 - **0.4.2** -- Feature: `harness_verdict.verification_required` — list of enabling conditions that survived doom (non-fatal) but need external validation. Surfaced in both JSON and markdown harness output. `delta_from_eval` string now includes `verification=N` count.
 - **0.4.1** -- Fix: strip `CLAUDE_*` env vars (notably `CLAUDE_AGENT_SDK_VERSION`) before spawning the `claude` subprocess. When Janus is invoked from within Claude Code (agent sandbox), inherited SDK env vars put `claude -p` into protocol mode and hang the subprocess indefinitely instead of processing stdin. Affected: `janus eval/doom/harness/loop` via `--backend claude` when invoked under Claude Code or any other Claude SDK host.
 - **0.4.0** -- Feature: `janus harness` 3-pass structured evaluation (eval → targeted-doom → crosscheck). `janus loop --harness` harness-aware refinement loop with LLM patch-mode refiner and convergence tracking. Primary backend: `claude` headless. Known limitations: loop refiner convergence not yet validated on production specs; opencode subprocess stdout intermittently unreliable in CI.

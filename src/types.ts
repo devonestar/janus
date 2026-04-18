@@ -265,6 +265,40 @@ export interface HarnessReport {
   harness_verdict: HarnessVerdict;
 }
 
+// --- Enrich ---
+export type ClaimType = "url" | "npm" | "github" | "statistical";
+export type FetchStatus = "success" | "error" | "skipped";
+export type EvidenceConfidence = "high" | "medium" | "low";
+
+export interface Claim {
+  type: ClaimType;
+  raw: string;
+  normalized: string;
+}
+
+export interface FetchedEvidence {
+  claim: Claim;
+  status: FetchStatus;
+  data: Record<string, unknown> | null;
+  error?: string;
+}
+
+export interface EnrichmentFinding {
+  source: string;
+  finding: string;
+  supports_assumption: string | null;
+  contradicts_assumption: string | null;
+  confidence: EvidenceConfidence;
+}
+
+export interface EnrichmentReport {
+  file: string;
+  claims_found: Claim[];
+  evidence: FetchedEvidence[];
+  findings: EnrichmentFinding[];
+  summary: string;
+}
+
 // Exit codes
 export const EXIT_RECOMMEND = 0;
 export const EXIT_CONDITIONAL = 1;
