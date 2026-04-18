@@ -18,3 +18,4 @@ These documents record design decisions, experiments, and self-evaluation result
 | `janus-failure-future-narratives.md` | Proposed `failure_chain` field for rejected paths |
 | `janus-honest-futures.md` | Internal bar for honest futures-facing language |
 | `janus-persona-pr-merge-gate.md` | Persona-gated PR/merge workflow proposal |
+| `janus-doom-gate.md` | Doom Gate: adversarial pre-mortem command proposal |

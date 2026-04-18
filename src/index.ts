@@ -29,7 +29,7 @@ const program = new Command();
 program
   .name("janus")
   .description("The two-faced gate that sees present and future, letting only the most robust paths pass")
-  .version("0.2.1");
+  .version("0.2.2");
 
 function exitCodeFor(status: DecisionStatus): number {
   switch (status) {

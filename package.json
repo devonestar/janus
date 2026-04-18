@@ -1,6 +1,6 @@
 {
   "name": "janus-gate",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Janus — AI-native decision gate for PRD/spec markdown.",
   "license": "MIT",
   "author": "devonestar",
@@ -29,7 +29,7 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "test": "node dist/index.js eval fixtures/smoke.md --backend mock",
+    "test": "node dist/index.js eval fixtures/smoke.md --backend mock && node scripts/test-no-tools-flag.mjs",
     "check:intake": "node scripts/check-intake.mjs",
     "self-dev": "node scripts/self-dev.mjs"
   },

@@ -199,7 +199,7 @@ Every `janus eval` or `janus compare` returns a JSON object with this shape:
 
 | Field | Value |
 |-------|-------|
-| Current version | `0.2.1` |
+| Current version | `0.2.2` |
 | npm package | `janus-gate` (`npm i -g janus-gate` or `npx janus-gate`) |
 | Binary | `janus` (on `$PATH` after install) |
 | Default backend | `claude` (headless Claude Code CLI -- no API key) |
@@ -292,7 +292,7 @@ Validators are registered in `scripts/self-dev.mjs`. To add a new one, add an en
 
 ## Dogfood Ledger
 
-Janus has been self-evaluated eleven times. Each round Janus evaluates one of its own design documents, applies its own principles, and the result drives the next change.
+Janus has been self-evaluated twelve times. Each round Janus evaluates one of its own design documents, applies its own principles, and the result drives the next change.
 
 | Round | Focus | Outcome |
 |-------|-------|---------|
@@ -307,6 +307,7 @@ Janus has been self-evaluated eleven times. Each round Janus evaluates one of it
 | 9 | Ship sampling | v0.2.0 with `--samples N`; discovered unknown-coverage is the larger value |
 | 10 | Persona roadmap | Janus picked Q x Source-C; rejected 7 alternatives; named 3 preconditions for Round 11 |
 | 11 | README storytelling | Janus picked Option E (Concrete-Evidence-First); rejected 3 alternatives including metaphor-first |
+| 12 | Doom Gate spec | Janus picked Option A (dedicated `doom` command + schema); rejected 3 alternatives (B=P4, C=P3, D=P4); conditional on grounding validation |
 
 ---
 
@@ -325,11 +326,13 @@ Work in progress / not yet shipped:
 - persona-gated PR / merge workflow
 - rejected-path canonicalization under sampling (first increment shipped in `bd9c5b6`)
 - failure future narratives (`failure_chain` field on rejected paths)
+- Doom Gate: adversarial pre-mortem command (`janus doom`) — spec evaluated in Round 12
 
 ---
 
 ## Changelog
 
+- **0.2.2** -- Fix: Claude backend `--tools ""` flag prevents recursive tool invocation. New structural test guard. Doom Gate spec added (Round 12 dogfood).
 - **0.2.1** -- Fix: default `claude` backend timeout 120 s -> 240 s. Previously long docs (> 10 KB) could SIGTERM under samples.
 - **0.2.0** -- Feature: `--samples N` on `janus eval`. New optional `variance_report` output field. Deterministic aggregation (majority vote + conservative tie-break + union of rejections/unknowns).
 - **0.1.1** -- Internal: removed MCP from shipped surface (archived under `reserved/`). Default backend switched to `claude` headless.

@@ -46,6 +46,7 @@ export class ClaudeBackend implements JanusBackend {
           "--model", this.model,
           "--no-session-persistence",
           "--disable-slash-commands",
+          "--tools", "",
         ],
         fullPrompt
       );

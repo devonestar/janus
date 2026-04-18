@@ -37,6 +37,7 @@ export class ClaudeBackend {
                 "--model", this.model,
                 "--no-session-persistence",
                 "--disable-slash-commands",
+                "--tools", "",
             ], fullPrompt);
             return this.parseResponse(stdout);
         }
