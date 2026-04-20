@@ -34,7 +34,7 @@
     "self-dev": "node scripts/self-dev.mjs"
   },
   "dependencies": {
-    "commander": "^12.0.0",
+    "commander": "^14.0.3",
     "yaml": "^2.4.0"
   },
   "keywords": [
