@@ -23,3 +23,4 @@ These documents record design decisions, experiments, and self-evaluation result
 | `janus-adversarial-decision-harness.md` | Product direction: model-agnostic adversarial decision harness |
 | `janus-lens-contract.md` | Fixed-lens system contract: scope, grounding, and overlap rules for 6 evaluation lenses |
 | `janus-deterministic-collapse.md` | Deterministic collapse rules: 7-metric floor gates with fatal dominance |
+| `janus-large-document-strategy.md` | Large document handling: size-aware timeout, warnings, and quality strategy |
