@@ -20,3 +20,6 @@ These documents record design decisions, experiments, and self-evaluation result
 | `janus-persona-pr-merge-gate.md` | Persona-gated PR/merge workflow proposal |
 | `janus-doom-gate.md` | Doom Gate: adversarial pre-mortem command proposal |
 | `janus-doctor-probe.md` | Doctor --probe + exit codes + JSON output (Round 14 dogfood) |
+| `janus-adversarial-decision-harness.md` | Product direction: model-agnostic adversarial decision harness |
+| `janus-lens-contract.md` | Fixed-lens system contract: scope, grounding, and overlap rules for 6 evaluation lenses |
+| `janus-deterministic-collapse.md` | Deterministic collapse rules: 7-metric floor gates with fatal dominance |
